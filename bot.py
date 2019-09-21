@@ -14,6 +14,8 @@ ACCESS_KEY = config.twitter_acc_key
 ACCESS_SECRET = config.twitter_acc_sec
 FLICKR_API_KEY = config.flickr_api_key
 FLICKR_SECRET = config.flickr_sec_key
+PHOTO_MESSAGE = 'Good Morning'
+KEYWORD = 'morning'
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
@@ -21,18 +23,15 @@ api = tweepy.API(auth)  # twitter
 flickr = flickrapi.FlickrAPI(FLICKR_API_KEY, FLICKR_SECRET, cache=True) # flickr 
 fontList=['AmaticSC-Bold.ttf', 'Caveat-Bold.ttf', 'Courgette-Regular.ttf',
             'DancingScript-Bold.ttf', 'Sacramento-Regular.ttf']
-PHOTO_MESSAGE = 'Good Morning'
 
 def tweetMorning() :
     fontSelected = random.choice(fontList)
     FONT_PATH = './assets/' + fontSelected
 
     # 1. select an image
-    keyword = 'morning'
-
-    photos = flickr.walk(text=keyword,
+    photos = flickr.walk(text=KEYWORD,
                             privacy_filter=1,
-                            tags=keyword,
+                            tags=KEYWORD,
                             extras='url_c',
                             safe_search=1,
                             content_type=1,
@@ -72,12 +71,11 @@ def tweetMorning() :
     width, height = img.size
     draw = ImageDraw.Draw(img)
 
-    text = PHOTO_MESSAGE
     fontsize = 1  # starting font size
     img_fraction = 0.65 # portion of image width you want text width to be
 
     font = ImageFont.truetype(FONT_PATH, fontsize)
-    while font.getsize(text)[0] < img_fraction*img.size[0]:
+    while font.getsize(PHOTO_MESSAGE)[0] < img_fraction*img.size[0]:
         fontsize += 1
         font = ImageFont.truetype(FONT_PATH, fontsize)
 
@@ -85,7 +83,7 @@ def tweetMorning() :
     fontsize -= 1
     font = ImageFont.truetype(FONT_PATH, fontsize)
 
-    draw.text((random.randint(10, int(width/3)), random.randint(10, int(height/2))), text, fill=(255,255,255), font=font)
+    draw.text((random.randint(10, int(width/3)), random.randint(10, int(height/2))), PHOTO_MESSAGE, fill=(255,255,255), font=font)
     img.save('./goodmorning_edit.jpg', quality=100) 
 
     print(creditLink)
