@@ -1,0 +1,5 @@
+flickrapi
+httplib2
+Pillow
+tweepy
+urllib3
