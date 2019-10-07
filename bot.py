@@ -92,7 +92,7 @@ def tweetMorning() :
     # To get file object
     photoFile = open('goodmorning_edit.jpg','rb')
     photoMedia = api.media_upload(filename='goodmorning_edit.jpg', file=photoFile)
-    api.update_status('🌅 Test Good Morning! [src 👉 ' + creditLink + ']', media_ids=[photoMedia.media_id_string])
+    api.update_status('🌅 Good Morning! [src 👉 ' + creditLink + ']', media_ids=[photoMedia.media_id_string])
 
 while True:
     now = datetime.datetime.now(datetime.timezone.utc)
