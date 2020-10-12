@@ -4,3 +4,4 @@ Pillow
 tweepy
 urllib3
 flask
+bs4

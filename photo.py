@@ -5,5 +5,5 @@ class Photo:
         self.photo_url = photo_url
         self.photo_title = photo_title
 
-    def photo_link():
+    def photo_link(self):
         return ('https://www.flickr.com/photos/' + str(self.user_id) + '/' + str(self.photo_id))
