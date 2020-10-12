@@ -20,15 +20,12 @@ KEYWORD = 'morning'
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
-api = tweepy.API(auth)  # twitter
+twitter = tweepy.API(auth)  # twitter
 flickr = flickrapi.FlickrAPI(FLICKR_API_KEY, FLICKR_SECRET, cache=True) # flickr 
-fontList=['AmaticSC-Bold.ttf', 'Caveat-Bold.ttf', 'Courgette-Regular.ttf',
+font_list=['AmaticSC-Bold.ttf', 'Caveat-Bold.ttf', 'Courgette-Regular.ttf',
             'DancingScript-Bold.ttf', 'Sacramento-Regular.ttf']
 
-def tweetMorning() :
-    fontSelected = random.choice(fontList)
-    FONT_PATH = './assets/' + fontSelected
-
+def get_photos():
     # 1. select an image
     photos = flickr.walk(text=KEYWORD,
                             privacy_filter=1,
@@ -37,33 +34,28 @@ def tweetMorning() :
                             safe_search=1,
                             content_type=1,
                             per_page=100)
-    photoInfo = []
+    photo_info = []
     for i, photo in enumerate(photos):
-        user = photo.get('owner')
-        phID = photo.get('id')
+        uid = photo.get('owner')
+        pid = photo.get('id')
         url = photo.get('url_c')
         title = photo.get('title')
-        
 
-        p1 = Photo(user, phID, url, title)
-        photoInfo.append(p1)
+        p1 = Photo(uid, pid, url, title)
+        photo_info.append(p1)
 
         if i>50:
             break
+    
+    return photo_info
 
-    selectedPhoto = random.choice(photoInfo)
-    creditLink = 'https://www.flickr.com/photos/' + str(selectedPhoto.userID) + '/' + str(selectedPhoto.photoID)
-
-    # 2. download image
-    urllib.request.urlretrieve(selectedPhoto.photoUrl, 'goodmorning.jpg')
-
-    # 3. open that image
+def prep_img(FONT_PATH):
     try:  
         img  = Image.open('./goodmorning.jpg')  
     except IOError: 
         pass
 
-    # 4. edit lighting
+    # edit lighting
     contrastor = ImageEnhance.Contrast(img)
     img = contrastor.enhance(0.70)
     brightor = ImageEnhance.Brightness(img)
@@ -85,22 +77,32 @@ def tweetMorning() :
     font = ImageFont.truetype(FONT_PATH, fontsize)
 
     draw.text((random.randint(10, int(width/3)), random.randint(10, int(height/2))), PHOTO_MESSAGE, fill=(255,255,255), font=font)
-    img.save('./goodmorning_edit.jpg', quality=100) 
+    img.save('./goodmorning_edit.jpg', quality=100)
 
-    print(creditLink)
 
-    # To get file object
-    photoFile = open('goodmorning_edit.jpg','rb')
-    photoMedia = api.media_upload(filename='goodmorning_edit.jpg', file=photoFile)
-    api.update_status('🌅 Good Morning! [src 👉 ' + creditLink + ']', media_ids=[photoMedia.media_id_string])
+def tweet_morning() :
+    font = random.choice(font_list)
+    FONT_PATH = './assets/' + font
+    selected = random.choice(get_photos())
+    cr_link = selected.photo_link()
+
+    urllib.request.urlretrieve(selected.photo_url, 'goodmorning.jpg')
+    prep_img(FONT_PATH) 
+
+    # open editted img
+    photo_file = open('goodmorning_edit.jpg','rb')
+    photo_media = twitter.media_upload(filename='goodmorning_edit.jpg', file=photo_file)
+    twitter.update_status('🌅 Good Morning! (source: '+cr_link+')', media_ids=[photo_media.media_id_string])
 
 while True:
     now = datetime.datetime.now(datetime.timezone.utc)
-    targetHourPST = 14
+    target_hour_PST = 14
     # pst       14
     # gmt+8     23
-    if now.hour is targetHourPST and now.minute is 0 and now.second is 0:
-        tweetMorning()
+    # if now.hour is target_hour_PST and now.minute is 0 and now.second is 0:
+    #     tweet_morning()
+    if now.hour is 21 and now.minute is 40 and now.second is 0:
+        tweet_morning()
 
 
 
