@@ -10,7 +10,7 @@ import os
 import xml
 # xml.etree.ElementTree.dump(<XML_OBJ>)
 from bs4 import BeautifulSoup
-import config
+#import config
 
 
 CONSUMER_KEY = os.environ['twitter_cons_key']
