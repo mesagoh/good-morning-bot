@@ -10,8 +10,11 @@ import os
 import xml
 # xml.etree.ElementTree.dump(<XML_OBJ>)
 from bs4 import BeautifulSoup
-#import config
 
+
+PHOTO_MESSAGE = 'Good Morning'
+KEYWORD = 'morning'
+DEV = False
 
 CONSUMER_KEY = os.environ['twitter_cons_key']
 CONSUMER_SECRET = os.environ['twitter_sec_key']
@@ -20,15 +23,15 @@ ACCESS_SECRET = os.environ['twitter_acc_sec']
 FLICKR_API_KEY = os.environ['flickr_api_key']
 FLICKR_SECRET = os.environ['flickr_sec_key']
 
-PHOTO_MESSAGE = 'Good Morning'
-KEYWORD = 'morning'
 
-# CONSUMER_KEY = config.twitter_cons_key
-# CONSUMER_SECRET = config.twitter_sec_key
-# ACCESS_KEY = config.twitter_acc_key
-# ACCESS_SECRET = config.twitter_acc_sec
-# FLICKR_API_KEY = config.flickr_api_key
-# FLICKR_SECRET = config.flickr_sec_key
+if DEV:
+    import config
+    CONSUMER_KEY = config.twitter_cons_key
+    CONSUMER_SECRET = config.twitter_sec_key
+    ACCESS_KEY = config.twitter_acc_key
+    ACCESS_SECRET = config.twitter_acc_sec
+    FLICKR_API_KEY = config.flickr_api_key
+    FLICKR_SECRET = config.flickr_sec_key
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
@@ -118,11 +121,15 @@ while True:
     target_hour_PST = 14
     # pst       14
     # gmt+8     23
-    if now.hour is target_hour_PST and now.minute is 0 and now.second is 0:
-        tweet_morning()
-    # if now.hour == 5 and now.minute == 51 and now.second == 0:
-        # tweet_morning()
-        # exit(0)
+    
+    if DEV: # change hour and minute to current time
+        if now.hour == 5 and now.minute == 51 and now.second == 0:
+            tweet_morning()
+            exit(0)
+    else:
+        if now.hour is target_hour_PST and now.minute is 0 and now.second is 0:
+            tweet_morning()
+
 
 
 
